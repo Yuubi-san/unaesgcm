@@ -1,0 +1,5 @@
+#!/bin/sh
+input="$1"
+output="$2"
+ivkey="$3"
+cat "$input" | /usr/local/libexec/unaesgcm/unaesgcm-real "$ivkey" > "$output"

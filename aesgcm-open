@@ -1,0 +1,76 @@
+#!/bin/bash
+
+bn="`basename "$0"`"
+if test -z "$1"; then
+  echo -en "\
+Usage:  $bn URL [content type fallback]
+
+Examples:
+  $bn aesgcm://files.xmpp.example.org/7/r/7rEFTd6cxUI#473360e0ad24889959858995\\
+4c8ebfe1444ec1b2d503c6986659af2c94fafe945f72c1e8486a5acfedb8a0f8
+  $bn file:///home/me/Downloads/7rEFTd6cxUI image/jpeg
+
+In abscence of the URL fragment, like in the last example, $bn prompts for the
+IV+key string interactively.
+" >&2
+  exit 1
+fi
+
+if test "`echo "$1" | cut -d: -f1 -s`" = "aesgcm"; then
+  url="https:`echo "$1" | cut -d: -f2 -s`"
+else
+  url="$1"
+fi
+type_fallback="$2"
+ivkey="`echo "$url" | cut -d# -f2 -s`"
+if test -z "$ivkey"; then
+  read -sp "Enter IV and key, concatenated, in hex (won't be echoed): " ivkey || exit 1
+  echo ""
+fi
+url="`echo "$url" | cut -d# -f1`"
+
+get_filename_and_type()
+{
+  curl \
+    --location --url "$url" \
+    --range 0-0 --silent --show-error \
+    --remote-name --remote-header-name \
+    --write-out '%{filename_effective}\n%{content_type}\n'
+}
+
+download_decrypt_and_open()
+{
+  local fn="$1"
+  local type="$2"
+  if test -z "$fn"; then
+    fn="$(mktemp -p.)" || (echo "fatal filename failure" >&2; exit 1)
+  fi
+  if test -z "$type"; then
+    type="$type_fallback"
+    if test -z "$type"; then
+      echo "unknown file type, and no fallback specified" >&2
+    else
+      echo "unknown file type, using fallback $type_fallback" >&2
+    fi
+  fi
+  curl --location --url "$url" | unaesgcm /dev/stdin "$fn" "$ivkey" &&
+  (
+    if test -n "$type" && which gtk-launch > /dev/null &&
+      application="`xdg-mime query default "$type"`"; then
+      gtk-launch "$application" "$fn"
+    else
+      xdg-open "$fn"
+    fi
+  )
+}
+
+dir="$(mktemp -d)" &&
+cd "$dir" &&
+filename_and_type="$(get_filename_and_type)" &&
+echo "$filename_and_type" |
+(
+  read -r fn
+  rm "$fn"
+  read -r type
+  download_decrypt_and_open "$fn" "$type"
+)

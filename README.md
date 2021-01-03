@@ -38,10 +38,12 @@ For Debian(-derived) systems: `# apt install desktop-file-utils`
 * `curl`, for URL fetching;
 * xdg-utils, for opening decrypted files;
 * optionally, `gtk-launch`, for opening decrypted files using, specifically,
-the content type reported by the server.
+the content type reported by the server;
+* optionally, `zenity`, for interactive prompt of decryption key and IV when a
+URL doesn't contain them (i. e. lacks the `#fragment` part).
 
 For Debian(-derived) systems: `# apt install libssl1.1 curl xdg-utils
-libgtk-3-bin`
+libgtk-3-bin zenity`
 
 
 ## Installation

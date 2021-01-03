@@ -27,6 +27,7 @@ install:
 		/usr/local/share/applications
 	cp unaesgcm-real /usr/local/libexec/unaesgcm/
 	cp unaesgcm aesgcm-open /usr/local/bin/
+	ln -sf /usr/local/bin/aesgcm-open /usr/local/libexec/unaesgcm/aesgcm-open-gui
 	chmod 755 \
 		/usr/local/bin/unaesgcm \
 		/usr/local/bin/aesgcm-open
@@ -37,6 +38,7 @@ install:
 uninstall:
 	rm -f \
 		/usr/local/share/applications/unaesgcm.desktop \
+		/usr/local/libexec/unaesgcm/aesgcm-open-gui \
 		/usr/local/bin/aesgcm-open \
 		/usr/local/bin/unaesgcm \
 		/usr/local/libexec/unaesgcm/unaesgcm-real

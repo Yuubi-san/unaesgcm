@@ -1,6 +1,10 @@
 #!/bin/bash
 
 bn="`basename "$0"`"
+if echo "$bn" | grep -q -- "-gui$"; then
+  gui=1
+fi
+
 if test -z "$1"; then
   echo -en "\
 Usage:  $bn URL [content type fallback]
@@ -12,6 +16,9 @@ Examples:
 
 In abscence of the URL fragment, like in the last example, $bn prompts for the
 IV+key string interactively.
+
+If the command is called with a name ending in -gui, it tries to use a dialog
+window as the prompt.
 " >&2
   exit 1
 fi
@@ -24,8 +31,16 @@ fi
 type_fallback="$2"
 ivkey="`echo "$url" | cut -d# -f2 -s`"
 if test -z "$ivkey"; then
-  read -sp "Enter IV and key, concatenated, in hex (won't be echoed): " ivkey || exit 1
-  echo ""
+  prompt="Enter IV and key, concatenated, in hex"
+  if test "$gui" != 1; then
+    read -sp "$prompt (won't be echoed): " ivkey || exit 1
+    echo ""
+  elif which zenity > /dev/null; then
+    ivkey="`zenity --entry --width=400 --hide-text --title="unaesgcm" \
+      --text="Decrypting $url\n\n$prompt:" --entry-text="\
+0123456789abcdef01234567\
+89abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567"`" || exit 0
+  fi
 fi
 url="`echo "$url" | cut -d# -f1`"
 

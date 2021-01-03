@@ -9,9 +9,8 @@ The utility consists of:
 
 * `unaesgcm` command for decrypting local files;
 * `aesgcm-open` command for fetching URLs, decrypting and opening files with
-associated applications.
-
-To be included is a `.desktop` file to associate the above with `aesgcm` scheme.
+associated applications;
+* a desktop entry handling `aesgcm` URLs using the above command.
 
 The utility is intended mainly for development/debugging, as the URLs with this
 scheme are supposed to be invisible to XMPP users, in ideal.
@@ -26,6 +25,12 @@ A C++20-ish compiler. g++ 8 or clang++ 9 will do.
 * `libcrypto`
 
 For Debian(-derived) systems: `# apt install libssl-dev`.
+
+### Install-time dependencies
+
+* desktop-file-utils
+
+For Debian(-derived) systems: `# apt install desktop-file-utils`
 
 ### Run-time dependencies
 
@@ -45,7 +50,13 @@ libgtk-3-bin`
 `$ make`<br/>
 `# make install`
 
-The latter places the files under `/usr/local`. To uninstall:
+The latter places the files under `/usr/local` and updates media type
+mappings cache. You, as a user, may additionaly need to do
+
+`$ xdg-mime default unaesgcm.desktop x-scheme-handler/aesgcm`
+
+to make the provided desktop entry the *default* `aesgcm` handler (for example,
+if you happen to have some *other* handler(s) already installed). To uninstall:
 
 `# make uninstall`
 

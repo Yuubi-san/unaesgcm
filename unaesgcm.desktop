@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=unaesgcm
+GenericName=aesgcm URL scheme handler
+NoDisplay=true
+Comment=Open files behind aesgcm URLs
+Exec=aesgcm-open %u
+Terminal=true
+MimeType=x-scheme-handler/aesgcm
+Categories=Development;Network;FileTransfer;Utility
+Keywords=xmpp;omemo;aes;gcm;decryption

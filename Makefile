@@ -23,19 +23,24 @@ unaesgcm.hpp: hex.hpp
 install:
 	mkdir -p \
 		/usr/local/libexec/unaesgcm \
-		/usr/local/bin
+		/usr/local/bin \
+		/usr/local/share/applications
 	cp unaesgcm-real /usr/local/libexec/unaesgcm/
 	cp unaesgcm aesgcm-open /usr/local/bin/
 	chmod +x \
 		/usr/local/bin/unaesgcm \
 		/usr/local/bin/aesgcm-open
+	cp unaesgcm.desktop /usr/local/share/applications/
+	update-desktop-database /usr/local/share/applications
 
 .PHONY: uninstall
 uninstall:
 	rm -f \
+		/usr/local/share/applications/unaesgcm.desktop \
 		/usr/local/bin/aesgcm-open \
 		/usr/local/bin/unaesgcm \
 		/usr/local/libexec/unaesgcm/unaesgcm-real
+	update-desktop-database /usr/local/share/applications
 	-rmdir /usr/local/libexec/unaesgcm
 
 README.html: README.md

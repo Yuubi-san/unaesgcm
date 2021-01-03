@@ -10,7 +10,8 @@ The utility consists of:
 * `unaesgcm` command for decrypting local files;
 * `aesgcm-open` command for fetching URLs, decrypting and opening files with
 associated applications;
-* a desktop entry handling `aesgcm` URLs using the above command.
+* a desktop entry handling `aesgcm` URLs using a GUI-friendly flavor of the
+above command.
 
 The utility is intended mainly for development/debugging, as the URLs with this
 scheme are supposed to be invisible to XMPP users, in ideal.

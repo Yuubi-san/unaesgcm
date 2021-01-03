@@ -17,8 +17,10 @@ Examples:
 In abscence of the URL fragment, like in the last example, $bn prompts for the
 IV+key string interactively.
 
-If the command is called with a name ending in -gui, it tries to use a dialog
-window as the prompt.
+If the command is called with a name ending in -gui, it:
+  1. tries to use a dialog window as the prompt;
+  2. tries to return 0 when failing for non-syntax reasons, for more sensible
+     integration with xdg-open.
 " >&2
   exit 1
 fi
@@ -89,3 +91,7 @@ echo "$filename_and_type" |
   read -r type
   download_decrypt_and_open "$fn" "$type"
 )
+
+res=$?
+test "$gui" = 1 && exit 0
+exit "$res"

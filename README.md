@@ -34,7 +34,7 @@ For Debian(-derived) systems: `# apt install desktop-file-utils`
 
 ### Run-time dependencies
 
-* `libssl`, for decryption;
+* `libcrypto`, for decryption;
 * `curl`, for URL fetching;
 * xdg-utils, for opening decrypted files;
 * optionally, `gtk-launch`, for opening decrypted files using, specifically,

@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <limits>
+#include <iomanip>
 
 using byte = unsigned char;
 constexpr auto byte_bits = std::numeric_limits<byte>::digits;

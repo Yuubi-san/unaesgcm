@@ -2,19 +2,6 @@
 #include "unaesgcm.hpp"
 #include <iostream>
 
-template<typename Cont>
-constexpr auto capacity( const Cont &c )   { return c.capacity(); }
-template<typename T, std::size_t N>
-constexpr auto capacity( const T (&)[N] ) { return N; }
-
-struct see_stderr : std::exception
-{
-  const char *what() const noexcept override
-  {
-    return "see stderr for details";
-  }
-};
-
 int main( const int argc, const char *const *const argv )
 {
   if ( argc != 2 )

@@ -16,6 +16,14 @@ above command.
 The utility is intended mainly for development/debugging, as the URLs with this
 scheme are supposed to be invisible to XMPP users, in ideal.
 
+### Some alternatives
+
+[In Rust](https://github.com/moparisthebest/ImageDownloader),
+[C](https://github.com/moparisthebest/ImageDownloader/blob/master/aesgcm.c),
+[Java](https://github.com/iNPUTmice/ImageDownloader).
+They seem to be more bare-bones, but may be preferred for their respective
+implementation languages and, therefore, the required tools and libraries.
+
 
 ## Requirements
 

@@ -49,9 +49,11 @@ libgtk-3-bin zenity`
 
 ## Installation
 
-`$ make test && (./test && echo "ok!" || echo "fail!")`<br/>
-`$ make`<br/>
-`# make install`
+```
+$ make test && (./test && echo "ok!" || echo "fail!")
+$ make
+# make install
+```
 
 The latter places the files under `/usr/local` and updates media type
 mappings cache. You, as a user, may additionaly need to do
@@ -62,6 +64,61 @@ to make the provided desktop entry the *default* `aesgcm` handler (for example,
 if you happen to have some *other* handler(s) already installed). To uninstall:
 
 `# make uninstall`
+
+## Usage
+
+```
+xdg-open AESGCM-URL
+aesgcm-open URL [CONTENT-TYPE-FALLBACK]
+unaesgcm IN-FILE OUT-FILE IV-KEY
+```
+
+### Examples
+
+`xdg-open    aesgcm://files.xmpp.example.org/7/r/7rEFTd6cxUI#473360e0a\
+d248899598589954c8ebfe1444ec1b2d503c6986659af2c94fafe945f72c1e8486a5acfedb8a0f8`
+
+`xdg-open    aesgcm://files.xmpp.example.org/7/r/7rEFTd6cxUI`  
+*\*graphical key entry dialog pops up\**
+
+`aesgcm-open aesgcm://files.xmpp.example.org/7/r/7rEFTd6cxUI#473360e0a\
+d248899598589954c8ebfe1444ec1b2d503c6986659af2c94fafe945f72c1e8486a5acfedb8a0f8`
+
+`aesgcm-open  https://files.xmpp.example.org/7/r/7rEFTd6cxUI#473360e0a\
+d248899598589954c8ebfe1444ec1b2d503c6986659af2c94fafe945f72c1e8486a5acfedb8a0f8`
+
+```
+$ cd ~/Downloads
+$ wget -q https://files.xmpp.example.org/7/r/7rEFTd6cxUI#fragment-is-not-used
+$ aesgcm-open file://$HOME/Downloads/7rEFTd6cxUI image/jpeg
+Enter IV and key, concatenated, in hex (won't be echoed): 
+unknown file type, using fallback image/jpeg
+IV size: 12 bytes
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   42k  100   42k    0     0  42.0M      0 --:--:-- --:--:-- --:--:-- 42.0M
+plaintext size: 43008 bytes
+tag: 01 23 45 67 89 ab cd ef 01 23 45 67 89 ab cd ef 
+```  
+*\*decrypted file is opened with the preferred application\**
+
+```
+$ curl -sS https://files.xmpp.example.org/M/Y/MYEqkJMJk1U | \
+head -c 64K | \
+unaesgcm /dev/stdin /dev/stdout 0e396446655582838f27f72f\
+4433db5fe066960bdd4e1d4d418b641c14bfcef9d574e29dcd0995352850f1eb | \
+ffprobe -i - |& \
+grep Duration
+IV size: 12 bytes
+plaintext size: 65520 bytes
+tag: fe dc ba 98 76 54 32 10 fe dc ba 98 76 54 32 10 
+authentication failed (input may have been tampered with, output is untrustworthy)
+  Duration: 02:48:27.77, start: 0.000000, bitrate: N/A
+```  
+Note: the `authentication failed` line is due to the incomplet input that causes
+`unaesgcm` to bogusly interpret the trailing 16 bytes as the authentication tag.
+This UX admittedly needs polish, as it is only possible to authenticate complete
+input.
 
 ## Security & privacy considerations
 

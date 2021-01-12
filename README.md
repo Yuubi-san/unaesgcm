@@ -27,7 +27,11 @@ implementation languages and, therefore, the required tools and libraries.
 
 ## Requirements
 
-A C++20-ish compiler. g++ 8 or clang++ 9 will do.
+* A C++20-ish compiler. g++ 8 or clang++ 9 will do.
+* GNU Make (not *strictly* necessary – unaesgcm is not terribly hard to build
+and install manually – but the instructions below rely on it).
+
+For Debian 10, the package names are `g++`, `clang-9` and `make`, respectively.
 
 ### Build-time dependencies
 

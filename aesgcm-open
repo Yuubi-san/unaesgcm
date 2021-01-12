@@ -7,7 +7,7 @@ fi
 
 if test -z "$1"; then
   echo -en "\
-Usage:  $bn URL [content type fallback]
+Usage:  $bn URL [CONTENT-TYPE-OVERRIDE]
 
 Examples:
   $bn aesgcm://files.xmpp.example.org/7/r/7rEFTd6cxUI#473360e0ad24889959858995\\
@@ -30,7 +30,7 @@ if test "`echo "$1" | cut -d: -f1 -s`" = "aesgcm"; then
 else
   url="$1"
 fi
-type_fallback="$2"
+type_override="$2"
 ivkey="`echo "$url" | cut -d# -f2 -s`"
 if test -z "$ivkey"; then
   prompt="Enter IV and key, concatenated, in hex"
@@ -62,13 +62,11 @@ download_decrypt_and_open()
   if test -z "$fn"; then
     fn="$(mktemp -p.)" || (echo "fatal filename failure" >&2; exit 1)
   fi
-  if test -z "$type"; then
-    type="$type_fallback"
-    if test -z "$type"; then
-      echo "unknown file type, and no fallback specified" >&2
-    else
-      echo "unknown file type, using fallback $type_fallback" >&2
-    fi
+  if test -n "$type_override"; then
+    echo "overriding content type '$type' with '$type_override'" >&2
+    type="$type_override"
+  elif test -z "$type"; then
+    echo "unknown content type (and none provided via command line)" >&2
   fi
   curl --location --url "$url" | unaesgcm /dev/stdin "$fn" "$ivkey" &&
   (

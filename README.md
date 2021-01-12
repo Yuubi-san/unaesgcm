@@ -81,7 +81,7 @@ if you happen to have some *other* handler(s) already installed). To uninstall:
 
 ```
 xdg-open AESGCM-URL
-aesgcm-open URL [CONTENT-TYPE-FALLBACK]
+aesgcm-open URL [CONTENT-TYPE-OVERRIDE]
 unaesgcm IN-FILE OUT-FILE IV-KEY
 ```
 
@@ -104,7 +104,7 @@ $ cd ~/Downloads
 $ wget -q https://files.xmpp.example.org/7/r/7rEFTd6cxUI#fragment-is-not-used
 $ aesgcm-open file://$HOME/Downloads/7rEFTd6cxUI image/jpeg
 Enter IV and key, concatenated, in hex (won't be echoed): 
-unknown file type, using fallback image/jpeg
+overriding content type '' with 'image/jpeg'
 IV size: 12 bytes
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed

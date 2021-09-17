@@ -8,7 +8,7 @@ int main( const int argc, const char *const *const argv )
   {
     std::clog <<
       "usage:   "<< argv[0] <<" hex_IV|hex_256bit_key\n"
-      "exmaple: "<< argv[0] <<" 8d82e8083d601e7f67de918418ef6c3cb703ebb91c7a943"
+      "example: "<< argv[0] <<" 8d82e8083d601e7f67de918418ef6c3cb703ebb91c7a943"
         "b9285eb5049fc319da4127bd6df34fedec8c58b71\n";
     return 2;
   }

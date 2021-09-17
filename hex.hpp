@@ -47,15 +47,24 @@ inline auto parse_hex(
 template<typename Stream, typename Cont>
 auto &dump_hex( Stream &out, const Cont &octets )
 {
+  if ( std::empty(octets) )
+    return out;
+
   const auto oldflags = out.flags();
   out.setf(std::ios_base::hex, std::ios_base::basefield);
   const auto oldfill  = out.fill('0');
-  for ( const auto o : octets )
+
+  auto o = std::begin(octets);
+  out.width(byte_digits);
+  out << unsigned{*o++};
+  while ( o != std::end(octets) )
   {
+    out.width(1);
+    out << '-';
     out.width(byte_digits);
-    out << unsigned{o} << ' ';
+    out << unsigned{*o++};
   }
-  out << '\b';
+
   out.fill (oldfill);
   out.flags(oldflags);
   return out;

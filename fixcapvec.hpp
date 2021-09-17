@@ -26,6 +26,7 @@ public:
   constexpr auto  data() const { return  std::data(_data); }
   constexpr auto  data()       { return  std::data(_data); }
   constexpr auto  size() const { return _size; }
+  constexpr bool empty() const { return !size(); }
   constexpr void resize(std::size_t sz) {assert(sz <= capacity()); _size = sz;}
   static
   constexpr auto capacity() { return std::size(decltype(_data){}); }

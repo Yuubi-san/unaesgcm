@@ -67,8 +67,9 @@ $ make
 # make install
 ```
 
-The latter places the files under `/usr/local` and updates media type
-mappings cache. You, as a user, may additionaly need to do
+The latter places the files under `/usr/local` (use `prefix` and `DESTDIR`
+variables to override) and updates media type mappings cache. You, as a user,
+may additionaly need to do
 
 `$ xdg-mime default unaesgcm.desktop x-scheme-handler/aesgcm`
 

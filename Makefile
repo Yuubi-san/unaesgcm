@@ -3,6 +3,7 @@ override CPPFLAGS := -DNDEBUG -O3 -fPIE -Wall -Wextra -Wpedantic -Wconversion \
   -Wcast-align -Wformat=2 -Wstrict-overflow=5 -Wsign-promo $(CPPFLAGS)
 override CXXFLAGS := --std=c++2a -Woverloaded-virtual $(CXXFLAGS)
 override LDLIBS   := -lcrypto $(LDLIBS)
+prefix            := /usr/local
 
 .PHONY: default
 default: unaesgcm-real
@@ -19,32 +20,33 @@ test.cpp:     unaesgcm.hpp hex.hpp fixcapvec.hpp
 unaesgcm.cpp: unaesgcm.hpp fixcapvec.hpp
 unaesgcm.hpp: hex.hpp
 
+override INSTALLDIR := $(DESTDIR)$(prefix)
 .PHONY: install
 install:
 	mkdir -p \
-		/usr/local/libexec/unaesgcm \
-		/usr/local/bin \
-		/usr/local/share/applications
-	cp unaesgcm-real /usr/local/libexec/unaesgcm/
-	cp unaesgcm aesgcm-open /usr/local/bin/
-	ln -sf aesgcm-open /usr/local/bin/aesgcm-open-gui
+		"$(INSTALLDIR)/libexec/unaesgcm" \
+		"$(INSTALLDIR)/bin" \
+		"$(INSTALLDIR)/share/applications"
+	cp unaesgcm-real "$(INSTALLDIR)/libexec/unaesgcm/"
+	cp unaesgcm aesgcm-open "$(INSTALLDIR)/bin/"
+	ln -sf aesgcm-open "$(INSTALLDIR)/bin/aesgcm-open-gui"
 	chmod 755 \
-		/usr/local/bin/unaesgcm \
-		/usr/local/bin/aesgcm-open
-	printf "`cat unaesgcm.desktop.printf`" /usr/local > \
-		/usr/local/share/applications/unaesgcm.desktop
-	update-desktop-database /usr/local/share/applications
+		"$(INSTALLDIR)/bin/unaesgcm" \
+		"$(INSTALLDIR)/bin/aesgcm-open"
+	printf "`cat unaesgcm.desktop.printf`" "$(prefix)" > \
+		"$(INSTALLDIR)/share/applications/unaesgcm.desktop"
+	update-desktop-database "$(INSTALLDIR)/share/applications"
 
 .PHONY: uninstall
 uninstall:
 	rm -f \
-		/usr/local/share/applications/unaesgcm.desktop \
-		/usr/local/bin/aesgcm-open-gui \
-		/usr/local/bin/aesgcm-open \
-		/usr/local/bin/unaesgcm \
-		/usr/local/libexec/unaesgcm/unaesgcm-real
-	update-desktop-database /usr/local/share/applications
-	-rmdir /usr/local/libexec/unaesgcm
+		"$(INSTALLDIR)/share/applications/unaesgcm.desktop" \
+		"$(INSTALLDIR)/bin/aesgcm-open-gui" \
+		"$(INSTALLDIR)/bin/aesgcm-open" \
+		"$(INSTALLDIR)/bin/unaesgcm" \
+		"$(INSTALLDIR)/libexec/unaesgcm/unaesgcm-real"
+	update-desktop-database "$(INSTALLDIR)/share/applications"
+	-rmdir "$(INSTALLDIR)/libexec/unaesgcm"
 
 README.html: README.md
 	markdown $< > $@

@@ -38,7 +38,7 @@ install:
 uninstall:
 	rm -f \
 		/usr/local/share/applications/unaesgcm.desktop \
-		/usr/local/libexec/unaesgcm/aesgcm-open-gui \
+		/usr/local/bin/aesgcm-open-gui \
 		/usr/local/bin/aesgcm-open \
 		/usr/local/bin/unaesgcm \
 		/usr/local/libexec/unaesgcm/unaesgcm-real

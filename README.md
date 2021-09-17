@@ -111,7 +111,7 @@ IV size: 12 bytes
                                  Dload  Upload   Total   Spent    Left  Speed
 100   42k  100   42k    0     0  42.0M      0 --:--:-- --:--:-- --:--:-- 42.0M
 plaintext size: 43008 bytes
-tag: 01 23 45 67 89 ab cd ef 01 23 45 67 89 ab cd ef 
+tag: 01-23-45-67-89-ab-cd-ef-01-23-45-67-89-ab-cd-ef
 ```  
 *\*decrypted file is opened with the preferred application\**
 

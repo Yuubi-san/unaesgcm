@@ -31,7 +31,8 @@ install:
 	chmod 755 \
 		/usr/local/bin/unaesgcm \
 		/usr/local/bin/aesgcm-open
-	cp unaesgcm.desktop /usr/local/share/applications/
+	printf "`cat unaesgcm.desktop.printf`" /usr/local > \
+		/usr/local/share/applications/unaesgcm.desktop
 	update-desktop-database /usr/local/share/applications
 
 .PHONY: uninstall

@@ -124,7 +124,7 @@ ffprobe -i - |& \
 grep Duration
 IV size: 12 bytes
 plaintext size: 65520 bytes
-tag: fe dc ba 98 76 54 32 10 fe dc ba 98 76 54 32 10 
+tag: fe-dc-ba-98-76-54-32-10-fe-dc-ba-98-76-54-32-10
 authentication failed (input may have been tampered with, output is untrustworthy)
   Duration: 02:48:27.77, start: 0.000000, bitrate: N/A
 ```  

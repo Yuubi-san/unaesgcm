@@ -1,7 +1,7 @@
 
 # unaesgcm
 An AES-256-GCM decryption utility specializing on `aesgcm`-scheme URLs as
-described in the [OMEMO media sharing XMPP proto-extension](https://xmpp.org/extensions/inbox/omemo-media-sharing.html)
+described in the [OMEMO media sharing XMPP extension (XEP-0454)](https://xmpp.org/extensions/xep-0454.html)
 and as implemented in modern XMPP clients. The latter meaning, in particular,
 that the initialization vector size is not restricted to 96 bits.
 

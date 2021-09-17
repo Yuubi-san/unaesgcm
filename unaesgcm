@@ -2,4 +2,4 @@
 input="$1"
 output="$2"
 ivkey="$3"
-cat "$input" | /usr/local/libexec/unaesgcm/unaesgcm-real "$ivkey" > "$output"
+cat "$input" | "`dirname "$0"`/../libexec/unaesgcm/unaesgcm-real" "$ivkey" > "$output"

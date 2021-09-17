@@ -68,7 +68,7 @@ download_decrypt_and_open()
   elif test -z "$type"; then
     echo "unknown content type (and none provided via command line)" >&2
   fi
-  curl --location --url "$url" | unaesgcm /dev/stdin "$fn" "$ivkey" &&
+  curl --location --url "$url" | "`dirname "$0"`/unaesgcm" /dev/stdin "$fn" "$ivkey" &&
   (
     if test -n "$type" && which gtk-launch > /dev/null &&
       application="`xdg-mime query default "$type"`"; then

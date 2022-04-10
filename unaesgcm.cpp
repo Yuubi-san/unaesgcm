@@ -1,6 +1,7 @@
 
 #include "unaesgcm.hpp"
 #include "fixcapvec.hpp"
+#include "overload.hpp"
 #include <openssl/evp.h>
 #include <iostream>
 #include <cassert>
@@ -32,11 +33,12 @@ auto to_int( const std::size_t sz, const std::string_view desc )
 }
 
 bool unaesgcm( const std::vector<byte> &iv,
-  const std::array<byte,key_bytes> &key,
+  const aes_key &key,
   std::istream &in, std::ostream &out )
 {
   using std::cerr; using std::clog;
   using std::data; using std::size;
+  using    ::data; using    ::size;
   using std::integral_constant;
 
   #define checked( func, args ) [&]{ if ( const auto res = func args ) \
@@ -47,14 +49,18 @@ bool unaesgcm( const std::vector<byte> &iv,
   struct autoctxfree : decltype(ctxfree) { ~autoctxfree(){ (*this)(); } }
     do_autoctxfree{ctxfree};
 
-  static_assert( key_bits == 256 );
-  checked(EVP_DecryptInit_ex,(ctx, EVP_aes_256_gcm(), nullptr,nullptr,nullptr));
+  const auto cipher = std::visit( overload
+  {
+    []( const std::array<byte,bits<256>> & ){ return EVP_aes_256_gcm(); },
+    []( const std::array<byte,bits<192>> & ){ return EVP_aes_192_gcm(); },
+    []( const std::array<byte,bits<128>> & ){ return EVP_aes_128_gcm(); },
+  }, key );
+  checked(EVP_DecryptInit_ex,(ctx, cipher, nullptr, nullptr, nullptr));
   checked(EVP_CIPHER_CTX_ctrl,(ctx, EVP_CTRL_GCM_SET_IVLEN,
     to_int(size(iv),"IV size"), nullptr));
   checked(EVP_DecryptInit_ex,(ctx, nullptr, nullptr, data(key), data(iv)));
 
-  static_assert( tag_bits % byte_bits == 0 );
-  constexpr auto tag_size    = integral_constant<unsigned,tag_bits/byte_bits>{};
+  constexpr auto tag_size    = integral_constant<unsigned,bits<tag_bits>>{};
   constexpr auto buffer_size = integral_constant<unsigned,4*1024>{};
   static_assert( buffer_size >= tag_size );
 

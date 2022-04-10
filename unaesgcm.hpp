@@ -19,7 +19,7 @@ struct bits_to_bytes
 template<std::size_t N>
 constexpr auto bits = bits_to_bytes<N>::value;
 
-constexpr auto tag_bits   = 128u;
+constexpr auto tag_bits = 128u;
 
 template<auto key_bits = 256u>
 inline auto parse_iv_and_key( const std::string_view iv_and_key )

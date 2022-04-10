@@ -95,7 +95,7 @@ int main()
     const auto Tag = 0xf32617f67c574fd9f44ef76ff880ab9f_arr;
     assert(( not unaesgcm(Key,IV,CT,Tag) ));
   }
-  
+
   // decryption of 51 octets
   {
     const auto Key = 0x4433db5fe066960bdd4e1d4d418b641c14bfcef9d574e29dcd0995352850f1eb_arr;

@@ -60,6 +60,9 @@ bool unaesgcm( const std::vector<byte> &iv,
     to_int(size(iv),"IV size"), nullptr));
   checked(EVP_DecryptInit_ex,(ctx, nullptr, nullptr, data(key), data(iv)));
 
+  in .exceptions( {} );
+  out.exceptions( {} );
+
   constexpr auto tag_size    = integral_constant<unsigned,bits<tag_bits>>{};
   constexpr auto buffer_size = integral_constant<unsigned,4*1024>{};
   static_assert( buffer_size >= tag_size );

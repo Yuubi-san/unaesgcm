@@ -19,11 +19,13 @@ scheme are supposed to be invisible to XMPP users, in ideal.
 ### Some alternatives
 
 [In Rust](https://github.com/moparisthebest/ImageDownloader),
+[C](https://github.com/wstrm/omemo-utils),
 [C](https://github.com/moparisthebest/ImageDownloader/blob/master/aesgcm.c),
 [Go](https://github.com/roobre/omemo-wget),
 [Java](https://github.com/iNPUTmice/ImageDownloader).
-They seem to be more bare-bones, but may be preferred for their respective
-implementation languages and, therefore, the required tools and libraries.
+Except, notably, omemo-utils, they seem to be more bare-bones, but may be
+preferred for their respective implementation languages and, therefore, the
+required tools and libraries.
 
 
 ## Requirements

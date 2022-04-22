@@ -41,8 +41,12 @@ bool unaesgcm( const std::vector<byte> &iv,
   using    ::data; using    ::size;
   using std::integral_constant;
 
-  #define checked( func, args ) [&]{ if ( const auto res = func args ) \
-    return res; cerr << "error: " #func " failed\n"; throw see_stderr{}; }();
+  #define checked( func, args ) [&]{ \
+    if ( const auto res = func args ) \
+      return res; \
+    cerr << "error: " #func " failed\n"; \
+    throw see_stderr{}; \
+  }();
 
   const auto ctx = checked( EVP_CIPHER_CTX_new,() );
   const auto ctxfree = [&]{ EVP_CIPHER_CTX_free(ctx); };

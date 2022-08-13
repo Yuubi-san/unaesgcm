@@ -115,7 +115,9 @@ bool unaesgcm( const std::vector<byte> &iv,
       static_cast<std::streamsize>(size(pt)) );
     if ( not out )
     {
-      cerr << "error: write failed after "<< out.tellp() <<" bytes\n";
+      const auto total_written = out.rdbuf()->pubseekoff(
+        0, std::ios_base::cur, std::ios_base::out );
+      cerr << "error: write failed after "<< total_written <<" bytes\n";
       throw see_stderr{};
     }
   };

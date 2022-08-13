@@ -4,6 +4,7 @@
 #include "overload.hpp"
 #include <openssl/evp.h>
 #include <iostream>
+#include <tuple>
 #include <cassert>
 
 template<typename Cont>
@@ -41,6 +42,9 @@ bool unaesgcm( const std::vector<byte> &iv,
   using    ::data; using    ::size;
   using std::integral_constant;
 
+  const auto &[verb, EVP_Init_ex, EVP_Update] =
+    std::tie("decrypt", EVP_DecryptInit_ex, EVP_DecryptUpdate);
+
   #define checked( func, args ) [&]{ \
     if ( const auto res = func args ) \
       return res; \
@@ -59,10 +63,10 @@ bool unaesgcm( const std::vector<byte> &iv,
     []( const std::array<byte,bits<192>> & ){ return EVP_aes_192_gcm(); },
     []( const std::array<byte,bits<128>> & ){ return EVP_aes_128_gcm(); },
   }, key );
-  checked(EVP_DecryptInit_ex,(ctx, cipher, nullptr, nullptr, nullptr));
+  checked(EVP_Init_ex,(ctx, cipher, nullptr, nullptr, nullptr));
   checked(EVP_CIPHER_CTX_ctrl,(ctx, EVP_CTRL_GCM_SET_IVLEN,
     to_int(size(iv),"IV size"), nullptr));
-  checked(EVP_DecryptInit_ex,(ctx, nullptr, nullptr, data(key), data(iv)));
+  checked(EVP_Init_ex,(ctx, nullptr, nullptr, data(key), data(iv)));
 
   in .exceptions( {} );
   out.exceptions( {} );
@@ -71,7 +75,7 @@ bool unaesgcm( const std::vector<byte> &iv,
   constexpr auto buffer_size = integral_constant<unsigned,4*1024>{};
   static_assert( buffer_size >= tag_size );
 
-  std::uintmax_t total_read{}, total_pt_size{};
+  std::uintmax_t total_read{}, total_processed{};
 
   const auto read = [&]( const auto N )
   {
@@ -90,18 +94,19 @@ bool unaesgcm( const std::vector<byte> &iv,
     return buf;
   };
 
-  const auto decrypt = [&]( const auto in )
+  const auto update = [&]( const auto in )
   {
     fixcapvec<byte,capacity(in)> out;
     int out_size;
     static_assert( capacity(in) <= int_max_u );
-    checked(EVP_DecryptUpdate,( ctx, data(out), &out_size,
+    checked(EVP_Update,( ctx, data(out), &out_size,
       data(in), static_cast<int>(size(in)) ));
     out.resize( static_cast<std::size_t>(out_size) );
-    total_pt_size += size(out);
+    total_processed += size(out);
     if ( size(out) != size(in) )
     {
-      cerr << "error: decrypt failed after "<< total_pt_size <<" bytes\n";
+      cerr <<
+        "error: "<< verb <<" failed after "<< total_processed <<" bytes\n";
       throw see_stderr{};
     }
     return out;
@@ -122,14 +127,14 @@ bool unaesgcm( const std::vector<byte> &iv,
     }
   };
 
-  const auto finalize = [&]<typename Cont>( Cont &&ct_tail_and_tag )
+  const auto finalize_dec = [&]<typename Cont>( Cont &&ct_tail_and_tag )
   {
     assert( size(ct_tail_and_tag) >= tag_size );
     const auto  ct =  pop_back(ct_tail_and_tag,  tag_size);
     const auto tag = tail(std::forward<Cont>(ct_tail_and_tag), tag_size);
-    write(decrypt(ct));
+    write(update(ct));
 
-    clog << "plaintext size: "<< total_pt_size <<" bytes\n";
+    clog << "plaintext size: "<< total_processed <<" bytes\n";
     dump_hex( clog << "tag: ", tag) << '\n';
 
     checked(EVP_CIPHER_CTX_ctrl,( ctx, EVP_CTRL_GCM_SET_TAG,
@@ -146,23 +151,23 @@ bool unaesgcm( const std::vector<byte> &iv,
     auto input = read(buffer_size);
     if ( size(input) == buffer_size )
     {
-      write(decrypt(lookbehind));
+      write(update(lookbehind));
       lookbehind = {};
       const auto lookahead = read(tag_size);
       if ( size(lookahead) == tag_size )
       {
-        write(decrypt(input));
+        write(update(input));
         lookbehind = lookahead;
         continue;
       }
       else  // eof
-        return finalize( cat(input,lookahead) );
+        return finalize_dec( cat(input,lookahead) );
     }
     else  // eof
     {
       auto ext_input = cat(lookbehind,input);
       if ( size(ext_input) >= tag_size )
-        return finalize( std::move(ext_input) );
+        return finalize_dec( std::move(ext_input) );
       else
       {
         cerr << "error: input too short ("<< total_read <<" bytes)\n";

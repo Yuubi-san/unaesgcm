@@ -90,21 +90,21 @@ bool unaesgcm( const std::vector<byte> &iv,
     return buf;
   };
 
-  const auto decrypt = [&]( const auto ct )
+  const auto decrypt = [&]( const auto in )
   {
-    fixcapvec<byte,capacity(ct)> pt;
-    int pt_size;
-    static_assert( capacity(ct) <= int_max_u );
-    checked(EVP_DecryptUpdate,( ctx, data(pt), &pt_size,
-      data(ct), static_cast<int>(size(ct)) ));
-    pt.resize( static_cast<std::size_t>(pt_size) );
-    total_pt_size += size(pt);
-    if ( size(pt) != size(ct) )
+    fixcapvec<byte,capacity(in)> out;
+    int out_size;
+    static_assert( capacity(in) <= int_max_u );
+    checked(EVP_DecryptUpdate,( ctx, data(out), &out_size,
+      data(in), static_cast<int>(size(in)) ));
+    out.resize( static_cast<std::size_t>(out_size) );
+    total_pt_size += size(out);
+    if ( size(out) != size(in) )
     {
       cerr << "error: decrypt failed after "<< total_pt_size <<" bytes\n";
       throw see_stderr{};
     }
-    return pt;
+    return out;
   };
 
   const auto write = [&]( const auto buf )

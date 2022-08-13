@@ -65,6 +65,10 @@ constexpr auto size( const std::variant<T...> &v )
   return std::visit( [](const auto &cont){return size(cont);}, v );
 }
 
+void aesgcm(
+  const std::vector<byte> &iv, const aes_key &key,
+  std::istream &in, std::ostream &out );
+
 [[nodiscard]]
 bool unaesgcm(
   const std::vector<byte> &iv, const aes_key &key,

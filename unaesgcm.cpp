@@ -33,7 +33,8 @@ auto to_int( const std::size_t sz, const std::string_view desc )
   throw see_stderr{};
 }
 
-bool unaesgcm( const std::vector<byte> &iv,
+static auto aesgcm( auto decrypt,
+  const std::vector<byte> &iv,
   const aes_key &key,
   std::istream &in, std::ostream &out )
 {
@@ -43,6 +44,8 @@ bool unaesgcm( const std::vector<byte> &iv,
   using std::integral_constant;
 
   const auto &[verb, EVP_Init_ex, EVP_Update] =
+    not decrypt ?
+    std::tie("encrypt", EVP_EncryptInit_ex, EVP_EncryptUpdate):
     std::tie("decrypt", EVP_DecryptInit_ex, EVP_DecryptUpdate);
 
   #define checked( func, args ) [&]{ \
@@ -127,6 +130,22 @@ bool unaesgcm( const std::vector<byte> &iv,
     }
   };
 
+  const auto finalize_enc = [&]
+  {
+    int zero;
+    checked(EVP_EncryptFinal_ex,( ctx, nullptr, &zero ));
+
+    clog << "ciphertext size: "<< total_processed <<" bytes\n";
+
+    std::array<byte,tag_size> tag;
+    checked(EVP_CIPHER_CTX_ctrl,( ctx, EVP_CTRL_AEAD_GET_TAG,
+      size(tag), data(tag) ));
+
+    dump_hex(clog << "tag: ", tag) << '\n';
+    write(tag);
+    return true;
+  };
+
   const auto finalize_dec = [&]<typename Cont>( Cont &&ct_tail_and_tag )
   {
     assert( size(ct_tail_and_tag) >= tag_size );
@@ -146,6 +165,15 @@ bool unaesgcm( const std::vector<byte> &iv,
 
   #undef checked
 
+  if ( not decrypt ) for (;;)
+  {
+    auto input = read(buffer_size);
+    const auto eof = size(input) != buffer_size;
+    write(update( std::move(input) ));
+    if ( eof )
+      return finalize_enc();
+  }
+  else
   for ( fixcapvec<byte,tag_size> lookbehind; ; )
   {
     auto input = read(buffer_size);
@@ -176,3 +204,15 @@ bool unaesgcm( const std::vector<byte> &iv,
     }
   }
 }
+
+enum verb : bool { encrypt, decrypt };
+
+void aesgcm(
+  const std::vector<byte> &iv, const aes_key &key,
+  std::istream &in, std::ostream &out )
+{ aesgcm(std::integral_constant<verb,encrypt>{}, iv, key, in, out); }
+
+bool unaesgcm(
+  const std::vector<byte> &iv, const aes_key &key,
+  std::istream &in, std::ostream &out )
+{ return aesgcm(std::integral_constant<verb,decrypt>{}, iv, key, in, out); }

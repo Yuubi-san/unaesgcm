@@ -34,8 +34,7 @@ auto to_int( const std::size_t sz, const std::string_view desc )
 }
 
 static auto aesgcm( auto decrypt,
-  const std::vector<byte> &iv,
-  const aes_key &key,
+  const std::vector<byte> &iv, const aes_key &key,
   std::istream &in, std::ostream &out )
 {
   using std::cerr; using std::clog;
@@ -43,8 +42,7 @@ static auto aesgcm( auto decrypt,
   using    ::data; using    ::size;
   using std::integral_constant;
 
-  const auto &[verb, EVP_Init_ex, EVP_Update] =
-    not decrypt ?
+  const auto &[verb, EVP_Init_ex, EVP_Update] = not decrypt ?
     std::tie("encrypt", EVP_EncryptInit_ex, EVP_EncryptUpdate):
     std::tie("decrypt", EVP_DecryptInit_ex, EVP_DecryptUpdate);
 
@@ -173,8 +171,7 @@ static auto aesgcm( auto decrypt,
     if ( eof )
       return finalize_enc();
   }
-  else
-  for ( fixcapvec<byte,tag_size> lookbehind; ; )
+  else for ( fixcapvec<byte,tag_size> lookbehind; ; )
   {
     auto input = read(buffer_size);
     if ( size(input) == buffer_size )

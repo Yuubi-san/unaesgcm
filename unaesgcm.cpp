@@ -107,12 +107,12 @@ bool unaesgcm( const std::vector<byte> &iv,
     return pt;
   };
 
-  const auto write = [&]( const auto pt )
+  const auto write = [&]( const auto buf )
   {
-    assert( size(pt) <= ssize_max_u );  // FIXME: write in two calls
+    assert( size(buf) <= ssize_max_u );  // FIXME: write in two calls
     out.write(
-      reinterpret_cast<const char *>(data(pt)),
-      static_cast<std::streamsize>(size(pt)) );
+      reinterpret_cast<const char *>(data(buf)),
+      static_cast<std::streamsize>(size(buf)) );
     if ( not out )
     {
       const auto total_written = out.rdbuf()->pubseekoff(

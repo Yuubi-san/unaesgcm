@@ -53,6 +53,12 @@ static auto aesgcm( auto decrypt,
     throw see_stderr{}; \
   }();
 
+  if ( std::empty(iv) )
+  {
+    std::cerr << "error: zero-length IV\n";
+    throw see_stderr{};
+  }
+
   const auto ctx = checked( EVP_CIPHER_CTX_new,() );
   const auto ctxfree = [&]{ EVP_CIPHER_CTX_free(ctx); };
   struct autoctxfree : decltype(ctxfree) { ~autoctxfree(){ (*this)(); } }

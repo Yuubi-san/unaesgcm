@@ -70,4 +70,22 @@ auto &dump_hex( Stream &out, const Cont &octets )
   return out;
 }
 
+// i/o manipulator (kinda)
+template<typename Container>
+class hexed
+{
+  Container &octets;
+
+public:
+  constexpr hexed( Container &octets ) : octets{octets} {}
+  constexpr hexed( const Container && ) = delete;
+
+  template<typename Stream>
+  constexpr friend auto &operator>>( Stream &, const hexed & ) = delete; //TODO?
+
+  template<typename Stream>
+  constexpr friend auto &operator<<( Stream &out, const hexed &h )
+  { return dump_hex(out, h.octets); }
+};
+
 #endif

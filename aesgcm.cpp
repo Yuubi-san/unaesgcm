@@ -139,7 +139,7 @@ static auto aesgcm( auto decrypt,
     checked(EVP_CIPHER_CTX_ctrl,( ctx, EVP_CTRL_AEAD_GET_TAG,
       size(tag), data(tag) ));
 
-    dump_hex(clog << "tag: ", tag) << '\n';
+    clog << "tag: "<< hexed(tag) <<'\n';
     write(tag);
     return true;
   };
@@ -151,8 +151,10 @@ static auto aesgcm( auto decrypt,
     const auto tag = tail(std::forward<Cont>(ct_tail_and_tag), tag_size);
     write(update(ct));
 
-    clog << "plaintext size: "<< total_processed <<" bytes\n";
-    dump_hex( clog << "tag: ", tag) << '\n';
+    clog
+      << "plaintext size: "<< total_processed <<" bytes\n"
+      << "tag: "<< hexed(tag) <<'\n'
+    ;
 
     checked(EVP_CIPHER_CTX_ctrl,( ctx, EVP_CTRL_GCM_SET_TAG,
       tag_size, const_cast<byte *>(data(tag)) ));

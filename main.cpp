@@ -24,8 +24,7 @@ int main( const int argc, const char *const *const argv )
     aesgcm( iv, key, std::cin, std::cout );
     return 0;
   }
-  else
-  if ( unaesgcm(iv, key, std::cin, std::cout) )
+  else if ( unaesgcm(iv, key, std::cin, std::cout) )
     return 0;
   else
   {

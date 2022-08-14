@@ -8,17 +8,17 @@ prefix            := /usr/local
 .PHONY: default
 default: unaesgcm-real
 
-unaesgcm-real: unaesgcm.cpp main.cpp
+unaesgcm-real: aesgcm.cpp main.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 	strip --strip-all $@
 
-test:          unaesgcm.cpp test.cpp
+test:          aesgcm.cpp test.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -UNDEBUG $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-main.cpp:     unaesgcm.hpp
-test.cpp:     unaesgcm.hpp hex.hpp fixcapvec.hpp
-unaesgcm.cpp: unaesgcm.hpp fixcapvec.hpp
-unaesgcm.hpp: hex.hpp
+main.cpp:   aesgcm.hpp
+test.cpp:   aesgcm.hpp hex.hpp fixcapvec.hpp
+aesgcm.cpp: aesgcm.hpp fixcapvec.hpp
+aesgcm.hpp: hex.hpp
 
 override INSTALLDIR := $(DESTDIR)$(prefix)
 .PHONY: install

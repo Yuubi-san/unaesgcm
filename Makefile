@@ -6,7 +6,10 @@ override LDLIBS   := -lcrypto $(LDLIBS)
 prefix            := /usr/local
 
 .PHONY: default
-default: unaesgcm-real
+default: aesgcm-real unaesgcm-real
+
+aesgcm-real: unaesgcm-real
+	ln -sf $< $@
 
 unaesgcm-real: aesgcm.cpp main.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
@@ -15,7 +18,7 @@ unaesgcm-real: aesgcm.cpp main.cpp
 test:          aesgcm.cpp test.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -UNDEBUG $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-main.cpp:   aesgcm.hpp
+main.cpp:   aesgcm.hpp basename.hpp
 test.cpp:   aesgcm.hpp hex.hpp fixcapvec.hpp
 aesgcm.cpp: aesgcm.hpp fixcapvec.hpp
 aesgcm.hpp: hex.hpp
@@ -27,8 +30,9 @@ install:
 		"$(INSTALLDIR)/libexec/unaesgcm" \
 		"$(INSTALLDIR)/bin" \
 		"$(INSTALLDIR)/share/applications"
-	cp unaesgcm-real "$(INSTALLDIR)/libexec/unaesgcm/"
+	cp {,un}aesgcm-real "$(INSTALLDIR)/libexec/unaesgcm/"
 	cp unaesgcm aesgcm-open "$(INSTALLDIR)/bin/"
+	ln -sf unaesgcm "$(INSTALLDIR)/bin/aesgcm"
 	ln -sf aesgcm-open "$(INSTALLDIR)/bin/aesgcm-open-gui"
 	chmod 755 \
 		"$(INSTALLDIR)/bin/unaesgcm" \
@@ -43,8 +47,8 @@ uninstall:
 		"$(INSTALLDIR)/share/applications/unaesgcm.desktop" \
 		"$(INSTALLDIR)/bin/aesgcm-open-gui" \
 		"$(INSTALLDIR)/bin/aesgcm-open" \
-		"$(INSTALLDIR)/bin/unaesgcm" \
-		"$(INSTALLDIR)/libexec/unaesgcm/unaesgcm-real"
+		"$(INSTALLDIR)"/bin/{,un}aesgcm \
+		"$(INSTALLDIR)"/libexec/unaesgcm/{,un}aesgcm-real
 	update-desktop-database "$(INSTALLDIR)/share/applications"
 	-rmdir "$(INSTALLDIR)/libexec/unaesgcm"
 
@@ -55,4 +59,4 @@ LICENSE.html: LICENSE.md
 
 .PHONY: clean
 clean:
-	rm -f unaesgcm-real test README.html LICENSE.html
+	rm -f {,un}aesgcm-real test README.html LICENSE.html

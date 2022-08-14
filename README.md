@@ -1,6 +1,6 @@
 
 # unaesgcm
-An AES-256-GCM decryption utility specializing on `aesgcm`-scheme URLs as
+An AES-256-GCM de-/encryption utility specializing on `aesgcm`-scheme URLs as
 described in the [OMEMO media sharing XMPP extension (XEP-0454)](https://xmpp.org/extensions/xep-0454.html)
 and as implemented in modern XMPP clients. The latter meaning, in particular,
 that the initialization vector size is not restricted to 96 bits.
@@ -11,7 +11,8 @@ The utility consists of:
 * `aesgcm-open` command for fetching URLs, decrypting and opening files with
 associated applications;
 * a desktop entry handling `aesgcm` URLs using a GUI-friendly flavor of the
-above command.
+above command;
+* `aesgcm` command for encrypting local files that exists mostly for symmetry.
 
 The utility is intended mainly for development/debugging, as the URLs with this
 scheme are supposed to be invisible to XMPP users, in ideal.
@@ -50,7 +51,7 @@ For Debian(-derived) systems: `# apt install desktop-file-utils`
 
 ### Run-time dependencies
 
-* `libcrypto`, for decryption;
+* `libcrypto`, for de-/encryption;
 * `curl`, for URL fetching;
 * xdg-utils, for opening decrypted files;
 * optionally, `gtk-launch`, for opening decrypted files using, specifically,
@@ -86,7 +87,7 @@ if you happen to have some *other* handler(s) already installed). To uninstall:
 ```
 xdg-open AESGCM-URL
 aesgcm-open URL [CONTENT-TYPE-OVERRIDE]
-unaesgcm IN-FILE OUT-FILE IV-KEY
+[un]aesgcm IN-FILE OUT-FILE IV-KEY
 ```
 
 ### Examples
@@ -138,8 +139,12 @@ input.
 
 ## Security & privacy considerations
 
-Currently no effort has been made at keeping the decryption key or decrypted
+Currently no effort has been made at keeping the cryptographic keys or decrypted
 data secure, except for not sending them away from the local machine.
+
+Note also that the `aesgcm` command currently relies on externally-provided
+encryption key and IV, making *the user* responsible for making sure those were
+generated correctly (using a cryptographically-secure RNG, etc.).
 
 ## License
 

@@ -1,5 +1,6 @@
 #!/bin/sh
+bn="`basename "$0"`"
 input="$1"
 output="$2"
 ivkey="$3"
-cat "$input" | "`dirname "$0"`/../libexec/unaesgcm/unaesgcm-real" "$ivkey" > "$output"
+cat "$input" | "`dirname "$0"`/../libexec/unaesgcm/$bn-real" "$ivkey" > "$output"

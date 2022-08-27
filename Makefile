@@ -30,7 +30,7 @@ install:
 		"$(INSTALLDIR)/libexec/unaesgcm" \
 		"$(INSTALLDIR)/bin" \
 		"$(INSTALLDIR)/share/applications"
-	cp {,un}aesgcm-real "$(INSTALLDIR)/libexec/unaesgcm/"
+	cp aesgcm-real unaesgcm-real "$(INSTALLDIR)/libexec/unaesgcm/"
 	cp unaesgcm aesgcm-open "$(INSTALLDIR)/bin/"
 	ln -sf unaesgcm "$(INSTALLDIR)/bin/aesgcm"
 	ln -sf aesgcm-open "$(INSTALLDIR)/bin/aesgcm-open-gui"
@@ -47,8 +47,10 @@ uninstall:
 		"$(INSTALLDIR)/share/applications/unaesgcm.desktop" \
 		"$(INSTALLDIR)/bin/aesgcm-open-gui" \
 		"$(INSTALLDIR)/bin/aesgcm-open" \
-		"$(INSTALLDIR)"/bin/{,un}aesgcm \
-		"$(INSTALLDIR)"/libexec/unaesgcm/{,un}aesgcm-real
+		"$(INSTALLDIR)"/bin/unaesgcm \
+		"$(INSTALLDIR)"/bin/aesgcm \
+		"$(INSTALLDIR)"/libexec/unaesgcm/unaesgcm-real
+		"$(INSTALLDIR)"/libexec/unaesgcm/aesgcm-real
 	update-desktop-database "$(INSTALLDIR)/share/applications"
 	-rmdir "$(INSTALLDIR)/libexec/unaesgcm"
 
@@ -59,4 +61,4 @@ LICENSE.html: LICENSE.md
 
 .PHONY: clean
 clean:
-	rm -f {,un}aesgcm-real test README.html LICENSE.html
+	rm -f aesgcm-real unaesgcm-real test README.html LICENSE.html

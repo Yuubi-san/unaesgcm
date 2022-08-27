@@ -4,19 +4,31 @@
 
 #include <algorithm>
 #include <string_view>
+#include <type_traits>
 
-inline std::string_view basename( const std::string_view path ) noexcept
-{
-  static constexpr auto windows =
+// for extra confusion, complies with neither POSIX nor GNU; see tests below
+template<typename RecognizeBackslash =
 #ifndef _WIN32
-    false
+  std::false_type
 #else
-    true
+  std::true_type
 #endif
-  ;
+>
+constexpr std::string_view basename(
+  const std::string_view path, const RecognizeBackslash rcgnz_bs = {} ) noexcept
+{
   const auto found = std::find_if( std::rbegin(path), std::rend(path),
-    [](const auto c){ return c == '/' or (windows and c == '\\'); } ).base();
+    [&](const auto c){ return c == '/' or (rcgnz_bs and c == '\\'); } ).base();
   return { found, std::end(path) };
 }
+
+static_assert( basename(std::string_view{""}) == "" );
+static_assert( basename(std::string_view{"/"}) == "" );
+static_assert( basename(std::string_view{"foo/"}) == "" );
+static_assert( basename(std::string_view{"foo"}) == "foo" );
+static_assert( basename(std::string_view{"foo/bar"}) == "bar" );
+
+static_assert( basename("foo/bar\\baz", false) == "bar\\baz" );
+static_assert( basename("foo/bar\\baz", true ) ==      "baz" );
 
 #endif

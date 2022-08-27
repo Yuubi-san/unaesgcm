@@ -33,7 +33,8 @@ auto to_int( const std::size_t sz, const std::string_view desc )
   throw see_stderr{};
 }
 
-static auto aesgcm( auto decrypt,
+template<typename Bool>
+static auto aesgcm( Bool decrypt,
   const std::vector<byte> &iv, const aes_key &key,
   std::istream &in, std::ostream &out )
 {
@@ -42,9 +43,9 @@ static auto aesgcm( auto decrypt,
   using    ::data; using    ::size;
   using std::integral_constant;
 
-  const auto &[verb, EVP_Init_ex, EVP_Update] = not decrypt ?
-    std::tie("encrypt", EVP_EncryptInit_ex, EVP_EncryptUpdate):
-    std::tie("decrypt", EVP_DecryptInit_ex, EVP_DecryptUpdate);
+  const auto &verb        = not decrypt ?    "encrypt"      :   "decrypt";
+  const auto &EVP_Init_ex = not decrypt ? EVP_EncryptInit_ex:EVP_DecryptInit_ex;
+  const auto &EVP_Update  = not decrypt ? EVP_EncryptUpdate :EVP_DecryptUpdate;
 
   #define checked( func, args ) [&]{ \
     if ( const auto res = func args ) \

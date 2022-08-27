@@ -81,11 +81,11 @@ public:
   constexpr hexed( const Container && ) = delete;
 
   template<typename Stream>
-  constexpr friend auto &operator>>( Stream &, const hexed & ) = delete; //TODO?
-
-  template<typename Stream>
   constexpr friend auto &operator<<( Stream &out, const hexed &h )
   { return dump_hex(out, h.octets); }
 };
+
+template<typename Stream, typename Container>
+constexpr auto &operator>>( Stream &, const hexed<Container> & ) = delete; //TODO?
 
 #endif

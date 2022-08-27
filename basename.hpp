@@ -19,7 +19,7 @@ constexpr std::string_view basename(
 {
   const auto found = std::find_if( std::rbegin(path), std::rend(path),
     [&](const auto c){ return c == '/' or (rcgnz_bs and c == '\\'); } ).base();
-  return { found, std::end(path) };
+  return { found, static_cast<std::size_t>(std::end(path) - found) };
 }
 
 static_assert( basename(std::string_view{""}) == "" );

@@ -30,6 +30,8 @@ public:
   constexpr void resize(std::size_t sz) {assert(sz <= capacity()); _size = sz;}
   static
   constexpr auto capacity() { return std::size(decltype(_data){}); }
+  static
+  constexpr auto max_size() { return capacity(); }
 };
 
 template<typename T, std::size_t CL, std::size_t CR>

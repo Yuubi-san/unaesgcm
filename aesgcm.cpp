@@ -12,6 +12,11 @@ constexpr auto capacity( const Cont &c )  { return c.capacity(); }
 template<typename T, std::size_t N>
 constexpr auto capacity( const T (&)[N] ) { return N; }
 
+template<typename Cont>
+constexpr auto max_size( const Cont &c )  { return c.max_size(); }
+template<typename T, std::size_t N>
+constexpr auto max_size( const T (&)[N] ) { return N; }
+
 struct see_stderr : std::exception
 {
   const char *what() const noexcept override
@@ -88,6 +93,7 @@ static auto aesgcm( Bool decrypt,
   const auto read = [&]( const auto N )
   {
     fixcapvec<byte,N> buf;
+    static_assert( max_size(buf) <= ssize_max_u );  // TODO?: read piecewisely
     in.read( reinterpret_cast<char *>(data(buf)), capacity(buf) );
     buf.resize( static_cast<std::size_t>(in.gcount()) );
     total_read += size(buf);
@@ -106,7 +112,7 @@ static auto aesgcm( Bool decrypt,
   {
     fixcapvec<byte,capacity(in)> out;
     int out_size;
-    static_assert( capacity(in) <= int_max_u );
+    static_assert( max_size(in) <= int_max_u );  // TODO?: update piecewisely
     checked(EVP_Update,( ctx, data(out), &out_size,
       data(in), static_cast<int>(size(in)) ));
     out.resize( static_cast<std::size_t>(out_size) );
@@ -122,7 +128,7 @@ static auto aesgcm( Bool decrypt,
 
   const auto write = [&]( const auto buf )
   {
-    assert( size(buf) <= ssize_max_u );  // FIXME: write in two calls
+    static_assert( max_size(buf) <= ssize_max_u );  // TODO?: write piecewisely
     out.write(
       reinterpret_cast<const char *>(data(buf)),
       static_cast<std::streamsize>(size(buf)) );
